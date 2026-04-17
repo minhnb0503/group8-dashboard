@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group 8 - Full Application Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        :root {
+            --bg-main: #F3F4F8;
+            --white: #FFFFFF;
+            --text-main: #141522;
+            --text-gray: #3B3E45;
+            --text-muted: #54577A;
+            --text-light: #666666;
+            --primary: #546FFF;
+            --primary-light: #BAC8FF;
+            --search-bg: #F5F5F7;
+            --border-color: #DADCE0;
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Mượt hơn */
+
+            /* Event Colors (Figma Specs) */
+            --e-green-bg: #BDFFDB; --e-green-bd: #8FDCB2; --e-green-txt: #2C5A41;
+            --e-red-bg: #FFDDDD; --e-red-bd: #FDB7B7; --e-red-txt: #721818;
+            --e-blue-bg: #BFC6FF; --e-blue-bd: #939EFF; --e-blue-txt: #131C6D;
+            --e-purple-bg: #D6C8FF; --e-purple-bd: #A384FF; --e-purple-txt: #341D76;
+            --e-yellow-bg: #FFEBB7; --e-yellow-bd: #E7C160; --e-yellow-txt: #684D08;
+            --e-purple-dark: #6438E0; --e-purple-dark-bd: #3A14A8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #e5e5e5;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        ::-webkit-scrollbar { display: none; }
+
+        /* ================= MAIN APP CONTAINER ================= */
+        .app-container {
+            width: 1440px;
+            height: 944px;
+            background: var(--bg-main);
+            border-radius: var(--border-radius);
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* ================= AUTHENTICATION SCREEN ================= */
+        .auth-container {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-main);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; 
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+        }
+        .auth-container.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none;}
+
+        .auth-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            width: 640px; padding: 40px 56px;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+        .auth-box h2 { font-size: 32px; font-weight: 600; color: #111; margin: 20px 0 40px 0; text-align: center;}
+        .form-group { width: 100%; margin-bottom: 24px; position: relative; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: var(--text-light); margin-bottom: 8px; }
+        .form-group input { 
+            width: 100%; height: 56px; 
+            border: 2px solid rgba(102, 102, 102, 0.15);
+            background: #F9F9FB;
+            border-radius: 12px; padding: 0 20px; font-family: 'Poppins'; font-size: 16px;
+            transition: var(--transition);
+        }
+        .form-group input:focus { 
+            border-color: var(--primary); 
+            background: #FFF;
+            outline: none; box-shadow: 0 0 0 4px rgba(84,111,255,0.15);
+        }
+        
+        .check-group { display: flex; align-items: center; gap: 10px; width: 100%; font-size: 14px; margin-top: -10px; margin-bottom: 20px;}
+        .check-group input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);}
+
+        .btn-auth {
+            width: 100%; height: 64px; border-radius: 40px; border: none;
+            background: #111; color: white; font-size: 18px; font-weight: 600; font-family: 'Poppins';
+            cursor: pointer; transition: var(--transition); margin-top: 10px;
+            position: relative; overflow: hidden;
+        }
+        .btn-auth:hover { background: var(--primary); box-shadow: 0 10px 25px rgba(84,111,255,0.4); transform: translateY(-2px);}
+        .btn-auth:active { transform: scale(0.98); }
+
+        .auth-divider { display: flex; align-items: center; gap: 20px; width: 100%; margin: 30px 0;}
+        .auth-divider span { height: 1px; flex: 1; background: rgba(102,102,102,0.15);}
+        .auth-divider p { color: #888; font-size: 14px; font-weight: 600; letter-spacing: 1px;}
+
+        .btn-outline {
+            width: 100%; height: 64px; border-radius: 40px; border: 2px solid rgba(102,102,102,0.2);
+            background: white; color: #111; font-size: 18px; font-weight: 600; font-family: 'Poppins';
+            cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center;
+        }
+        .btn-outline:hover { background: #f8f9fa; border-color: #111; transform: translateY(-2px);}
+
+        .auth-form { width: 100%; display: none; flex-direction: column; align-items: center; animation: fadeIn 0.5s ease-out; }
+        .auth-form.active-form { display: flex; }
+
+        .auth-footer { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: transparent; display: flex; justify-content: center; align-items: center; gap: 40px; font-size: 14px; color: #888; font-weight: 500;}
+        .auth-footer span { cursor: pointer; transition: var(--transition);}
+        .auth-footer span:hover { color: #111;}
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            width: 260px; background: var(--white);
+            padding: 40px 20px; display: flex; flex-direction: column;
+            border-radius: 20px 0 0 20px; z-index: 10;
+        }
+        .logo { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; padding-left: 10px; }
+        .logo i { font-size: 32px; color: var(--primary); background: rgba(84, 111, 255, 0.1); padding: 10px; border-radius: 12px;}
+        .logo span { font-family: 'Montserrat'; font-size: 28px; font-weight: 700; color: #111;}
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px; padding: 16px 20px; border-radius: 16px;
+            font-size: 16px; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: var(--transition);
+        }
+        .nav-item i { font-size: 20px; transition: var(--transition); }
+        .nav-item:hover { color: var(--text-main); background: rgba(245, 245, 247, 0.8); transform: translateX(5px); }
+        .nav-item.active { background: var(--primary); color: white; transform: translateX(0); box-shadow: 0 10px 20px rgba(84, 111, 255, 0.25);}
+        .nav-item.active i { color: white; }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-wrapper { flex: 1; position: relative; padding: 30px 40px; display: flex; flex-direction: column;}
+
+        /* HEADER */
+        .header {
+            height: 80px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 24px;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px;
+            margin-bottom: 30px; position: relative; z-index: 50;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            flex-shrink: 0;
+        }
+        .search-bar { 
+            background: var(--search-bg); width: 320px; height: 50px; border-radius: 25px; 
+            display: flex; align-items: center; padding: 0 20px; gap: 12px; transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .search-bar i { color: var(--text-muted); }
+        .search-bar:focus-within { width: 360px; background: #fff; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(84,111,255,0.1); }
+        .search-bar input { border: none; background: transparent; outline: none; font-family: 'Poppins'; font-size: 15px; width: 100%; color: var(--text-main);}
+        
+        .header-actions { display: flex; align-items: center; gap: 25px; position: relative;}
+        .noti-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); font-size: 22px; background: #fff; border: 1px solid var(--border-color); color: var(--text-gray);}
+        .noti-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(84,111,255,0.2);}
+        
+        .user-profile { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 15px 6px 6px; border-radius: 30px; transition: var(--transition); background: #fff; border: 1px solid var(--border-color);}
+        .user-profile:hover { border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+        .greeting { font-weight: 600; font-size: 15px;}
+        .avatar { width: 40px; height: 40px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        /* DROPDOWNS */
+        .dropdown {
+            position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            opacity: 0; visibility: hidden; transform: translateY(15px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100;
+        }
+        .dropdown.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        
+        .noti-drop { top: 70px; right: 200px; width: 320px; padding: 20px; }
+        .noti-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 20px; font-size: 16px;}
+        .noti-header i { cursor: pointer; transition: var(--transition); color: var(--text-muted);}
+        .noti-header i:hover { color: var(--e-red-txt); transform: rotate(90deg) scale(1.2); }
+        .noti-body { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; color: var(--text-muted); background: var(--search-bg); padding: 15px; border-radius: 12px;}
+
+        .profile-drop { top: 70px; right: 0; width: 240px; padding: 15px; display: flex; flex-direction: column; gap: 8px;}
+        .drop-item { display: flex; align-items: center; gap: 15px; padding: 12px 15px; font-weight: 600; font-size: 15px; border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-gray);}
+        .drop-item i { font-size: 18px; width: 20px;}
+        .drop-item:hover { background: rgba(84, 111, 255, 0.1); color: var(--primary); transform: translateX(5px); }
+
+        /* ================= TABS CHÍNH ================= */
+        .page-content {
+            flex: 1; position: relative; overflow-y: auto; opacity: 0; visibility: hidden; display: none; padding-bottom: 20px;
+        }
+        .page-content.active-view { 
+            opacity: 1; visibility: visible; display: block; 
+            animation: fadeIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* ANIMATION CHO CÁC PHẦN TỬ CON TRONG TAB */
+        .active-view .stagger-1 { animation: slideUp 0.5s ease forwards; animation-delay: 0.1s; opacity: 0; }
+        .active-view .stagger-2 { animation: slideUp 0.5s ease forwards; animation-delay: 0.2s; opacity: 0; }
+        .active-view .stagger-3 { animation: slideUp 0.5s ease forwards; animation-delay: 0.3s; opacity: 0; }
+
+        .card { background: var(--white); border-radius: 24px; transition: var(--transition); border: 1px solid rgba(0,0,0,0.02);}
+        .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.06); transform: translateY(-5px); border-color: rgba(84,111,255,0.1);}
+
+        /* --- TAB OVERVIEW --- */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 30px; }
+        .stat-card { height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; cursor: pointer; position: relative; overflow: hidden;}
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); opacity: 0; transition: var(--transition);}
+        .stat-card:hover::before { opacity: 1; }
+        .stat-card:active { transform: scale(0.97); }
+        .stat-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--text-muted);}
+        .stat-title i { font-size: 20px; color: var(--primary);}
+        .stat-num { font-size: 40px; font-weight: 700; color: var(--text-main); letter-spacing: -1px;}
+
+        .main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 30px; }
+        .chart-card { padding: 30px; height: 420px; display: flex; flex-direction: column; }
+        .chart-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 25px; color: var(--text-main);}
+        
+        .recent-card { margin-top: 30px; padding: 25px 30px; display: flex; flex-direction: column; justify-content: center; height: 130px;}
+        .recent-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 15px;}
+        .activity-tags { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px;}
+        .tag { background: #F7F7F7; padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-color);}
+        .tag:hover { background: #e2e4ff; color: var(--primary); border-color: var(--primary-light); transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(84,111,255,0.15);}
+        .tag-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;}
+
+        .deadline-card { padding: 30px; height: 580px; display: flex; flex-direction: column;}
+        .deadline-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 25px; color: var(--text-main);}
+        .deadline-list { flex: 1; overflow-y: auto; padding-right: 5px;}
+        .dl-item { display: flex; align-items: center; gap: 18px; padding: 16px 15px; border-radius: 16px; margin-bottom: 10px; border: 1px solid transparent; transition: var(--transition); cursor: pointer; background: #fafafa;}
+        .dl-item:hover { background: #fff; border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(0,0,0,0.05); transform: translateX(5px);}
+        .dl-num { font-weight: 700; font-size: 20px; width: 30px; color: var(--text-light); text-align: center;}
+        .dl-info { flex: 1; }
+        .dl-info strong { font-size: 16px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 4px;}
+        .dl-info p { font-size: 13px; color: var(--text-muted); font-weight: 500;}
+        .dl-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 12px;}
+        
+        .dl-item.done { opacity: 0.7;}
+        .dl-item.done .dl-info strong { text-decoration: line-through; color: var(--text-muted); }
+        .dl-item.done .dl-check { background: var(--e-green-txt); border-color: var(--e-green-txt); color: white; box-shadow: 0 0 10px rgba(44,90,65,0.3);}
+
+        /* --- TAB TASK --- */
+        .task-section { background: transparent; margin-bottom: 40px;}
+        .ts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .ts-header h2 { font-size: 24px; font-weight: 700; color: var(--text-main);}
+        .ts-actions { display: flex; align-items: center; gap: 20px; }
+        .sort-text { font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; padding: 10px; border-radius: 12px; transition: var(--transition);}
+        .sort-text:hover { background: var(--white); color: var(--primary);}
+        
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-weight: 600; font-size: 15px; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(84, 111, 255, 0.4); display: flex; align-items: center; gap: 8px;}
+        .btn-primary:hover { background: #425adb; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(84, 111, 255, 0.5); }
+        .btn-primary:active { transform: translateY(0) scale(0.96); }
+        
+        .task-list { display: flex; gap: 25px; overflow-x: auto; padding: 10px 10px 30px 10px; margin: 0 -10px;}
+        .t-card { min-width: 320px; background: var(--white); border-radius: 24px; padding: 20px; border: 1px solid rgba(0,0,0,0.03); transition: var(--transition); cursor: pointer; position: relative;}
+        .t-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--primary-light);}
+        .t-img { width: 100%; height: 140px; border-radius: 16px; object-fit: cover; margin-bottom: 20px; transition: var(--transition);}
+        .t-card:hover .t-img { transform: scale(1.03); }
+        .t-title { font-weight: 700; font-size: 18px; margin-bottom: 6px; color: var(--text-main);}
+        .t-sub { font-weight: 500; font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
+        .prog-info { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; margin-bottom: 10px; color: var(--text-gray);}
+        .prog-track { width: 100%; height: 8px; background: #F0F0F0; border-radius: 8px; position: relative; overflow: visible;}
+        .prog-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #8979FF); border-radius: 8px; transition: width 1s ease-in-out;}
+        .prog-thumb { width: 18px; height: 18px; background: var(--primary); border: 3px solid white; border-radius: 50%; position: absolute; top: -5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        .t-footer { margin-top: 25px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: var(--text-muted); padding-top: 15px; border-top: 1px solid var(--border-color);}
+        .t-footer i { color: var(--e-yellow-txt);}
+
+        /* --- TAB CALENDAR --- */
+        .calendar-wrapper { background: var(--white); border-radius: 24px; height: 100%; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+        
+        .cal-header { display: flex; justify-content: space-between; padding: 25px 30px; align-items: center; border-bottom: 1px solid var(--border-color); position: relative;}
+        .cal-nav { display: flex; align-items: center; gap: 15px; font-weight: 700; font-size: 18px;}
+        .btn-icon { width: 40px; height: 40px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: white; transition: var(--transition); color: var(--text-gray);}
+        .btn-icon:hover { background: var(--search-bg); color: var(--primary); border-color: var(--primary-light);}
+        .cal-date { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; padding: 8px 15px; border-radius: 12px; transition: var(--transition);}
+        .cal-date:hover { background: var(--search-bg);}
+        
+        /* Dropdown Date Picker */
+        .date-picker-drop {
+            position: absolute; top: 60px; left: 0; background: rgba(255,255,255,0.98); border-radius: 20px;
+            padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); display: none; z-index: 100; width: 280px; border: 1px solid var(--border-color);
+        }
+        .date-picker-drop.show { display: block; animation: slideDownFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .dp-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 15px; font-size: 15px;}
+        .dp-header i { cursor: pointer; padding: 5px; border-radius: 5px; transition: var(--transition);}
+        .dp-header i:hover { background: var(--search-bg); color: var(--primary);}
+        .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 14px;}
+        .dp-grid > div:nth-child(-n+7) { font-weight: 700; color: var(--text-muted); margin-bottom: 5px;}
+        .dp-day { padding: 8px 0; cursor: pointer; border-radius: 8px; font-weight: 600; transition: var(--transition);}
+        .dp-day:hover { background: var(--primary-light); color: var(--primary);}
+        .dp-day.muted { opacity: 0.3; pointer-events: none;}
+        .dp-day.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(84,111,255,0.4);}
+
+        .cal-view-switch { display: flex; background: #F3F4F6; border-radius: 25px; padding: 4px; border: 1px solid rgba(0,0,0,0.05);}
+        .view-btn { padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 20px; transition: var(--transition); color: var(--text-muted);}
+        .view-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.08);}
+
+        /* Lịch View */
+        .cal-body { display: flex; flex: 1; overflow-y: hidden; position: relative;}
+        
+        /* Picker Nhỏ bên trái */
+        .cal-sidebar { width: 300px; padding: 25px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; flex-shrink: 0; background: #fafafa;}
+        .mini-cal-header { font-weight: 700; font-size: 16px; margin-bottom: 20px; width: 100%; display: flex; justify-content: space-between; align-items: center;}
+        .mini-cal-header i { cursor: pointer; padding: 5px; border-radius: 50%; transition: var(--transition);}
+        .mini-cal-header i:hover { background: #e0e0e0;}
+        .mini-grid { display: grid; grid-template-columns: repeat(7, 35px); gap: 4px; text-align: center; font-size: 14px; font-weight: 600;}
+        .mini-grid > div:nth-child(-n+7) { color: var(--text-muted); margin-bottom: 10px;}
+        .m-day { width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 10px; cursor: pointer; transition: var(--transition);}
+        .m-day:hover:not(.muted) { background: var(--primary-light); color: var(--primary);}
+        .m-day.muted { opacity: 0.3; pointer-events: none;}
+        .m-day.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(84,111,255,0.4);}
+
+        /* Lưới Lịch */
+        .cal-main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white;}
+        
+        /* Header của Week View */
+        .week-header { display: flex; height: 70px; border-bottom: 1px solid var(--border-color); background: white; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .wh-time-gap { width: 70px; border-right: 1px solid var(--border-color); }
+        .wh-day { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border-color); font-size: 13px; font-weight: 600; color: var(--text-muted); transition: var(--transition);}
+        .wh-day span.num { font-size: 24px; font-weight: 700; color: var(--text-main); margin-top: 2px;}
+        .wh-day.active { background: rgba(84, 111, 255, 0.05); border-bottom: 3px solid var(--primary); color: var(--primary);}
+        .wh-day.active span.num { color: var(--primary);}
+        .wh-day.weekend { background: #F9F9FB; }
+
+        .cal-scroll-area { flex: 1; overflow-y: auto; display: flex; position: relative; scroll-behavior: smooth;}
+        
+        .time-col { width: 70px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; background: #fafafa;}
+        .time-label { height: 80px; font-size: 13px; color: var(--text-light); font-weight: 600; text-align: center; transform: translateY(-10px);}
+
+        .grid-wrapper { flex: 1; position: relative; display: flex; background: white;}
+        
+        /* Lưới Day */
+        .day-column { flex: 1; position: relative; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: background 0.2s ease;}
+        .day-column.weekend { background: #F9F9FB; }
+        .day-column.drag-over { background: rgba(84, 111, 255, 0.05); outline: 2px dashed var(--primary-light); outline-offset: -2px;}
+        
+        .grid-cell { height: 80px; border-bottom: 1px solid var(--border-color); width: 100%; box-sizing: border-box;}
+        /* Add slight dotted line for 30min mark */
+        .grid-cell::after { content: ''; display: block; border-bottom: 1px dashed rgba(0,0,0,0.05); height: 40px;}
+
+        /* Event Blocks */
+        .event-block { 
+            position: absolute; left: 6px; right: 6px; border-radius: 8px; padding: 6px 10px; 
+            font-size: 12px; font-weight: 600; cursor: grab; transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+            display: flex; flex-direction: column; overflow: hidden; justify-content: flex-start;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 5;
+        }
+        .event-block:active { cursor: grabbing; z-index: 50; transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15);}
+        .event-block.dragging { opacity: 0.7; transform: scale(1.02); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2)); z-index: 100;}
+        .ev-title { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px;}
+        .ev-time { font-weight: 500; font-size: 11px; margin-top: 4px; opacity: 0.9;}
+        
+        /* Colors */
+        .e-green { background: var(--e-green-bg); border-left: 4px solid var(--e-green-bd); color: var(--e-green-txt); }
+        .e-red { background: var(--e-red-bg); border-left: 4px solid var(--e-red-bd); color: var(--e-red-txt); }
+        .e-blue { background: var(--e-blue-bg); border-left: 4px solid var(--e-blue-bd); color: var(--e-blue-txt); }
+        .e-purple { background: var(--e-purple-bg); border-left: 4px solid var(--e-purple-bd); color: var(--e-purple-txt); }
+        .e-yellow { background: var(--e-yellow-bg); border-left: 4px solid var(--e-yellow-bd); color: var(--e-yellow-txt); }
+        .e-purple-dark { background: var(--e-purple-dark); border-left: 4px solid var(--e-purple-dark-bd); color: white; }
+
+        /* KEYFRAMES */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        /* Bỏ ripple overlay div, dùng keyframe */
+        .ripple {
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple-animation 0.6s linear; background-color: rgba(255, 255, 255, 0.4);
+        }
+        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="auth-container" id="auth-screen">
+        <div class="auth-box">
+            <div class="auth-form active-form" id="form-signin">
+                <div class="logo" style="margin-bottom: 0;"><i class="fa-solid fa-layer-group"></i></div>
+                <h2>Sign in</h2>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••">
+                    <div style="position: absolute; right: 20px; top: 40px; cursor: pointer; color: #888; transition: var(--transition);"><i class="fa-regular fa-eye-slash hover-primary"></i></div>
+                </div>
+                <div style="width: 100%; text-align: right; margin-bottom: 25px;">
+                    <a href="#" style="color: var(--primary); font-weight: 600; text-decoration: none; font-size: 14px;">Forgot your password?</a>
+                </div>
+                <button class="btn-auth" onclick="createRipple(event); setTimeout(loginSuccess, 300)">Log in</button>
+                <div class="auth-divider"><span></span><p>OR</p><span></span></div>
+                <button class="btn-outline" onclick="switchAuth('signup')">Sign up</button>
+            </div>
+
+            <div class="auth-form" id="form-signup">
+                <div class="logo" style="margin-bottom: 0;"><i class="fa-solid fa-layer-group"></i></div>
+                <h2>Create an account</h2>
+                <p style="margin-top: -30px; margin-bottom: 30px; color: #666; font-size: 15px;">Already have an account? <a href="#" onclick="switchAuth('signin')" style="color: var(--primary); font-weight: 700; text-decoration: none;">Log in</a></p>
+                <div style="display: flex; gap: 20px; width: 100%;">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="example@email.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••">
+                    <p style="font-size: 13px; color: #888; margin-top: 8px;">Use 8 or more characters with a mix of letters, numbers & symbols</p>
+                </div>
+                <div class="check-group">
+                    <input type="checkbox" checked>
+                    <label style="margin: 0; color: #555; font-weight: 500;">I want to receive emails about product updates.</label>
+                </div>
+                <button class="btn-auth" onclick="createRipple(event); setTimeout(loginSuccess, 300)">Sign up</button>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <span>Help Center</span>
+            <span>Terms of Service</span>
+            <span>Privacy Policy</span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i><span>Group 8</span>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('overview')"><i class="fa-solid fa-border-all"></i> Overview</div>
+                <div class="nav-item" onclick="switchTab('task')"><i class="fa-regular fa-file-lines"></i> Task</div>
+                <div class="nav-item" onclick="switchTab('calendar')"><i class="fa-regular fa-calendar"></i> Calendar</div>
+            </div>
+        </div>
+
+        <div class="main-wrapper">
+            <div class="header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="header-actions">
+                    <div class="noti-btn" onclick="toggleDropdown(event, 'drop-noti')"><i class="fa-regular fa-bell"></i></div>
+                    <div class="dropdown noti-drop" id="drop-noti">
+                        <div class="noti-header"><span>Notifications</span><i class="fa-solid fa-xmark" onclick="toggleDropdown(event, 'drop-noti')"></i></div>
+                        <div class="noti-body"><i class="fa-solid fa-check-circle" style="color: var(--e-green-txt); font-size: 18px;"></i><span>You are all caught up!</span></div>
+                    </div>
+
+                    <div class="user-profile" onclick="toggleDropdown(event, 'drop-profile')">
+                        <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                        <span class="greeting">Hello, User!</span>
+                        <i class="fa-solid fa-caret-down" style="font-size: 14px; margin-right: 5px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="dropdown profile-drop" id="drop-profile">
+                        <div class="drop-item"><i class="fa-regular fa-user-circle"></i> Profile</div>
+                        <div class="drop-item"><i class="fa-solid fa-gear"></i> Settings</div>
+                        <div style="height: 1px; background: var(--border-color); margin: 5px 0;"></div>
+                        <div class="drop-item" onclick="logout()" style="color: var(--e-red-txt);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content active-view" id="page-overview">
+                <div class="stats-row stagger-1">
+                    <div class="card stat-card"><div class="stat-title"><i class="fa-solid fa-layer-group"></i> Total Projects</div><div class="stat-num">124</div></div>
+                    <div class="card stat-card"><div class="stat-title" style="color: var(--e-red-txt);"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</div><div class="stat-num">12</div></div>
+                    <div class="card stat-card"><div class="stat-title" style="color: var(--e-green-txt);"><i class="fa-solid fa-check-double"></i> Completed</div><div class="stat-num">98</div></div>
+                    <div class="card stat-card"><div class="stat-title"><i class="fa-solid fa-spinner"></i> In Progress</div><div class="stat-num">14</div></div>
+                </div>
+
+                <div class="main-grid">
+                    <div class="grid-left stagger-2">
+                        <div class="card chart-card">
+                            <h3>Monthly Projects Completed</h3>
+                            <div style="flex: 1; position: relative;"><canvas id="projectChart"></canvas></div>
+                        </div>
+                        <div class="card recent-card stagger-3">
+                            <h3>Recent Activities</h3>
+                            <div class="activity-tags">
+                                <div class="tag"><div class="tag-icon"><i class="fa-solid fa-pen"></i></div> Created Wireframe</div>
+                                <div class="tag"><div class="tag-icon" style="background: var(--e-green-txt);"><i class="fa-solid fa-check"></i></div> Uploaded Assets</div>
+                                <div class="tag"><div class="tag-icon" style="background: var(--e-purple-txt);"><i class="fa-solid fa-comment"></i></div> Client Meeting</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-right stagger-2">
+                        <div class="card deadline-card">
+                            <h3>Upcoming Deadlines</h3>
+                            <div class="deadline-list">
+                                <div class="dl-item" onclick="toggleTask(this)"><div class="dl-num">01</div><div class="dl-info"><strong>Create Wireframe</strong><p>16 Apr 2026</p></div><div class="dl-check"><i class="fa-solid fa-check" style="opacity: 0;"></i></div></div>
+                                <div class="dl-item" onclick="toggleTask(this)"><div class="dl-num">02</div><div class="dl-info"><strong>Design System</strong><p>18 Apr 2026</p></div><div class="dl-check"><i class="fa-solid fa-check" style="opacity: 0;"></i></div></div>
+                                <div class="dl-item" onclick="toggleTask(this)"><div class="dl-num">03</div><div class="dl-info"><strong>Frontend Dev</strong><p>20 Apr 2026</p></div><div class="dl-check"><i class="fa-solid fa-check" style="opacity: 0;"></i></div></div>
+                                <div class="dl-item done" onclick="toggleTask(this)"><div class="dl-num">04</div><div class="dl-info"><strong>Backend Setup</strong><p>10 Apr 2026</p></div><div class="dl-check"><i class="fa-solid fa-check"></i></div></div>
+                                <div class="dl-item done" onclick="toggleTask(this)"><div class="dl-num">05</div><div class="dl-info"><strong>Database Init</strong><p>12 Apr 2026</p></div><div class="dl-check"><i class="fa-solid fa-check"></i></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content" id="page-task">
+                <div class="task-section stagger-1">
+                    <div class="ts-header">
+                        <h2>Personal Projects</h2>
+                        <div class="ts-actions">
+                            <div class="sort-text"><i class="fa-solid fa-arrow-down-short-wide"></i> Sort By : Deadline</div>
+                            <button class="btn-primary" onclick="createRipple(event)"><i class="fa-solid fa-plus"></i> New Task</button>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="t-card">
+                            <img class="t-img" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" alt="Code">
+                            <div class="t-title">Creating Web UI</div><div class="t-sub">UX Design Role</div>
+                            <div class="prog-info"><span>Progress</span><span class="prog-val">85%</span></div>
+                            <div class="prog-track"><div class="prog-fill" style="width:85%;"></div><div class="prog-thumb" style="left:calc(85% - 9px);"></div></div>
+                            <div class="t-footer"><i class="fa-regular fa-clock"></i> 4 Hours Left</div>
+                        </div>
+                        <div class="t-card">
+                            <img class="t-img" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80" alt="Code">
+                            <div class="t-title">Fixing Bugs</div><div class="t-sub">Frontend Team</div>
+                            <div class="prog-info"><span>Progress</span><span class="prog-val">40%</span></div>
+                            <div class="prog-track"><div class="prog-fill" style="width: 40%; background: var(--e-red-txt);"></div><div class="prog-thumb" style="left: calc(40% - 9px); background: var(--e-red-txt);"></div></div>
+                            <div class="t-footer" style="color: var(--e-red-txt);"><i class="fa-regular fa-clock"></i> Overdue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-section stagger-2" style="margin-bottom: 50px;">
+                    <div class="ts-header">
+                        <h2>Team Projects</h2>
+                        <div class="ts-actions">
+                            <div class="sort-text"><i class="fa-solid fa-arrow-down-short-wide"></i> Sort By : Deadline</div>
+                            <button class="btn-primary" onclick="createRipple(event)"><i class="fa-solid fa-plus"></i> New Project</button>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="t-card">
+                            <img class="t-img" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80" alt="Code">
+                            <div class="t-title">Marketing Website</div><div class="t-sub">Fullstack Developer</div>
+                            <div class="prog-info"><span>Progress</span><span class="prog-val">15%</span></div>
+                            <div class="prog-track"><div class="prog-fill" style="width:15%;"></div><div class="prog-thumb" style="left:calc(15% - 9px);"></div></div>
+                            <div class="t-footer"><i class="fa-regular fa-clock"></i> 14 Days Left</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content" id="page-calendar">
+                <div class="calendar-wrapper stagger-1">
+                    <div class="cal-header">
+                        <div class="cal-nav">
+                            <div class="btn-icon"><i class="fa-solid fa-chevron-left"></i></div>
+                            <div class="cal-date" onclick="toggleDropdown(event, 'drop-datepicker')" id="main-date-display">
+                                Apr 16, 2026 <i class="fa-solid fa-chevron-down" style="font-size:14px; color: var(--primary);"></i>
+                                <div class="dropdown date-picker-drop" id="drop-datepicker">
+                                    <div class="dp-header"><i class="fa-solid fa-chevron-left"></i> <span id="dp-month-label">Apr 2026</span> <i class="fa-solid fa-chevron-right"></i></div>
+                                    <div class="dp-grid" id="dp-grid-days">
+                                        <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+                                        <div class="dp-day muted">30</div><div class="dp-day muted">31</div><div class="dp-day">1</div><div class="dp-day">2</div><div class="dp-day">3</div><div class="dp-day">4</div><div class="dp-day">5</div>
+                                        <div class="dp-day">6</div><div class="dp-day">7</div><div class="dp-day">8</div><div class="dp-day">9</div><div class="dp-day">10</div><div class="dp-day">11</div><div class="dp-day">12</div>
+                                        <div class="dp-day">13</div><div class="dp-day">14</div><div class="dp-day">15</div><div class="dp-day active">16</div><div class="dp-day">17</div><div class="dp-day">18</div><div class="dp-day">19</div>
+                                        <div class="dp-day">20</div><div class="dp-day">21</div><div class="dp-day">22</div><div class="dp-day">23</div><div class="dp-day">24</div><div class="dp-day">25</div><div class="dp-day">26</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="color: var(--text-muted); margin-left:15px; font-weight: 500; font-size: 15px;">Today</div>
+                            <div class="btn-icon"><i class="fa-solid fa-chevron-right"></i></div>
+                        </div>
+                        <div class="cal-view-switch">
+                            <div class="view-btn active" onclick="switchCalView('day', this)">Day</div>
+                            <div class="view-btn" onclick="switchCalView('week', this)">Week</div>
+                        </div>
+                        <button class="btn-primary" onclick="createRipple(event)"><i class="fa-solid fa-plus"></i> New Event</button>
+                    </div>
+
+                    <div class="cal-body">
+                        
+                        <div class="cal-sidebar" id="cal-mini-sidebar">
+                            <div class="mini-cal-header">
+                                <i class="fa-solid fa-chevron-left"></i> 
+                                <span id="mini-month-label">Apr 2026</span> 
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                            <div class="mini-grid" id="mini-grid-days">
+                                <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+                                <div class="m-day muted">30</div><div class="m-day muted">31</div><div class="m-day">1</div><div class="m-day">2</div><div class="m-day">3</div><div class="m-day">4</div><div class="m-day">5</div>
+                                <div class="m-day">6</div><div class="m-day">7</div><div class="m-day">8</div><div class="m-day">9</div><div class="m-day">10</div><div class="m-day">11</div><div class="m-day">12</div>
+                                <div class="m-day">13</div><div class="m-day">14</div><div class="m-day">15</div><div class="m-day active">16</div><div class="m-day">17</div><div class="m-day">18</div><div class="m-day">19</div>
+                                <div class="m-day">20</div><div class="m-day">21</div><div class="m-day">22</div><div class="m-day">23</div><div class="m-day">24</div><div class="m-day">25</div><div class="m-day">26</div>
+                                <div class="m-day">27</div><div class="m-day">28</div><div class="m-day">29</div><div class="m-day muted">1</div><div class="m-day muted">2</div><div class="m-day muted">3</div><div class="m-day muted">4</div>
+                            </div>
+                        </div>
+
+                        <div class="cal-main-area">
+                            <div class="week-header" id="week-header" style="display: none;">
+                                <div class="wh-time-gap"></div> 
+                                <div class="wh-day"><span>Mon</span><span class="num">13</span></div>
+                                <div class="wh-day"><span>Tue</span><span class="num">14</span></div>
+                                <div class="wh-day"><span>Wed</span><span class="num">15</span></div>
+                                <div class="wh-day active"><span>Thu</span><span class="num">16</span></div>
+                                <div class="wh-day"><span>Fri</span><span class="num">17</span></div>
+                                <div class="wh-day weekend"><span>Sat</span><span class="num">18</span></div>
+                                <div class="wh-day weekend"><span>Sun</span><span class="num">19</span></div>
+                            </div>
+
+                            <div class="cal-scroll-area" id="cal-scroll">
+                                <div class="time-col" id="time-column"></div>
+                                
+                                <div class="grid-wrapper" id="grid-day">
+                                    <div class="day-column dropzone" id="day-col-1">
+                                        <div class="event-block e-green" draggable="true" style="top: 720px; height: 80px;">
+                                            <div class="ev-title">🧟‍♂️ Team Standup</div>
+                                            <div class="ev-time">09:00 - 10:00</div>
+                                        </div>
+                                        <div class="event-block e-red" draggable="true" style="top: 880px; height: 40px;">
+                                            <div class="ev-title">☕ Quick Review</div>
+                                            <div class="ev-time">11:00 - 11:30</div>
+                                        </div>
+                                        <div class="event-block e-yellow" draggable="true" style="top: 960px; height: 80px;">
+                                            <div class="ev-title">🐫 Lunch Break</div>
+                                            <div class="ev-time">12:00 - 13:00</div>
+                                        </div>
+                                        <div class="event-block e-blue" draggable="true" style="top: 1120px; height: 120px;">
+                                            <div class="ev-title">🧠 Client Presentation</div>
+                                            <div class="ev-time">14:00 - 15:30</div>
+                                        </div>
+                                        <div class="event-block e-purple-dark" draggable="true" style="top: 1280px; height: 80px;">
+                                            <div class="ev-title">🎉 Wrap up & Deploy</div>
+                                            <div class="ev-time">16:00 - 17:00</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-wrapper" id="grid-week" style="display: none;">
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Ripple Effect ---
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple");
+            const ripple = button.querySelector(".ripple");
+            if (ripple) ripple.remove();
+            button.appendChild(circle);
+        }
+
+        // --- 2. Auth Logic ---
+        const authScreen = document.getElementById('auth-screen');
+        const formSignIn = document.getElementById('form-signin');
+        const formSignUp = document.getElementById('form-signup');
+
+        function switchAuth(type) {
+            if (type === 'signup') {
+                formSignIn.classList.remove('active-form');
+                formSignUp.classList.add('active-form');
+            } else {
+                formSignUp.classList.remove('active-form');
+                formSignIn.classList.add('active-form');
+            }
+        }
+
+        function loginSuccess() {
+            authScreen.classList.add('hidden');
+            setTimeout(initChart, 500); 
+            initCalendarGrid();
+            setupDragAndDrop();
+            setupDatePicker();
+        }
+
+        function logout() {
+            authScreen.classList.remove('hidden');
+            document.querySelectorAll('.dropdown').forEach(drop => drop.classList.remove('show'));
+        }
+
+        // --- 3. Sidebar Nav ---
+        function switchTab(tabName) {
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = document.querySelectorAll('.page-content');
+            
+            navItems.forEach(nav => nav.classList.remove('active'));
+            pages.forEach(page => {
+                page.classList.remove('active-view');
+                // Xóa để trigger lại animation
+                page.style.animation = 'none';
+                page.offsetHeight; 
+                page.style.animation = null; 
+            });
+
+            if(tabName === 'overview') {
+                navItems[0].classList.add('active');
+                document.getElementById('page-overview').classList.add('active-view');
+            } else if (tabName === 'task') {
+                navItems[1].classList.add('active');
+                document.getElementById('page-task').classList.add('active-view');
+            } else if (tabName === 'calendar') {
+                navItems[2].classList.add('active');
+                document.getElementById('page-calendar').classList.add('active-view');
+                // Scroll tới giờ làm việc (09:00 AM)
+                setTimeout(() => {
+                    const scrollArea = document.getElementById('cal-scroll');
+                    scrollArea.scrollTop = 720; // 9 * 80px
+                }, 100);
+            }
+        }
+
+        // --- 4. Dropdowns Toggle ---
+        function toggleDropdown(event, id) {
+            event.stopPropagation();
+            const targetDrop = document.getElementById(id);
+            const allDrops = document.querySelectorAll('.dropdown');
+            allDrops.forEach(drop => { if(drop.id !== id) drop.classList.remove('show'); });
+            targetDrop.classList.toggle('show');
+        }
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown').forEach(drop => drop.classList.remove('show'));
+        });
+
+        // --- 5. Task Logic ---
+        function toggleTask(element) {
+            element.classList.toggle('done');
+            const icon = element.querySelector('.dl-check i');
+            icon.style.opacity = element.classList.contains('done') ? '1' : '0';
+        }
+
+        // --- 6. Chart.js ---
+        let chartRendered = false;
+        function initChart() {
+            if(chartRendered) return;
+            const ctx = document.getElementById('projectChart').getContext('2d');
+            let gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(84, 111, 255, 0.5)');
+            gradient.addColorStop(1, 'rgba(84, 111, 255, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [{
+                        data: [40, 60, 100, 80, 120, 150, 180, 160, 200, 170, 140, 190],
+                        borderColor: '#546FFF', backgroundColor: gradient,
+                        borderWidth: 4, pointBackgroundColor: '#546FFF',
+                        pointBorderColor: '#FFF', pointBorderWidth: 3, pointRadius: 5, pointHoverRadius: 8,
+                        fill: true, tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { padding: 12, cornerRadius: 8, titleFont: {size: 14}, bodyFont: {size: 14} } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)', borderDash: [5, 5] }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    },
+                    animation: { y: { duration: 2000, easing: 'easeOutQuart' } }
+                }
+            });
+            chartRendered = true;
+        }
+
+        // --- 7. Calendar View & Grid ---
+        function switchCalView(type, btnObj) {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            btnObj.classList.add('active');
+
+            const gridDay = document.getElementById('grid-day');
+            const gridWeek = document.getElementById('grid-week');
+            const weekHeader = document.getElementById('week-header');
+            const miniSidebar = document.getElementById('cal-mini-sidebar');
+
+            if(type === 'day') {
+                gridDay.style.display = 'flex';
+                gridWeek.style.display = 'none';
+                weekHeader.style.display = 'none';
+                miniSidebar.style.display = 'flex';
+            } else {
+                gridDay.style.display = 'none';
+                gridWeek.style.display = 'flex';
+                weekHeader.style.display = 'flex';
+                miniSidebar.style.display = 'none';
+            }
+        }
+
+        function initCalendarGrid() {
+            const timeCol = document.getElementById('time-column');
+            let timeHtml = '<div style="height: 40px;"></div>'; 
+            for(let i = 1; i <= 23; i++) {
+                let hour = i < 10 ? '0'+i+':00' : i+':00';
+                timeHtml += `<div class="time-label">${hour}</div>`;
+            }
+            timeCol.innerHTML = timeHtml;
+
+            const dayCol1 = document.getElementById('day-col-1');
+            for(let i=0; i<24; i++) dayCol1.insertAdjacentHTML('beforeend', '<div class="grid-cell"></div>');
+
+            const weekGrid = document.getElementById('grid-week');
+            let weekHtml = '';
+            for(let d = 0; d < 7; d++) {
+                let isWeekend = (d === 5 || d === 6) ? 'weekend' : '';
+                weekHtml += `<div class="day-column dropzone ${isWeekend}" data-day="${d}">`;
+                for(let h = 0; h < 24; h++) weekHtml += `<div class="grid-cell"></div>`;
+                
+                // Demo draggable events cho Week
+                if(d===0) weekHtml += `<div class="event-block e-green" draggable="true" style="top: 720px; height: 80px;"><div class="ev-title">🧟‍♂️ Design Sync</div><div class="ev-time">09:00 - 10:00</div></div>`;
+                if(d===3) weekHtml += `<div class="event-block e-blue" draggable="true" style="top: 1120px; height: 120px;"><div class="ev-title">🧠 Client Present</div><div class="ev-time">14:00 - 15:30</div></div>`;
+                if(d===4) weekHtml += `<div class="event-block e-red" draggable="true" style="top: 1280px; height: 80px;"><div class="ev-title">🚨 Fix Bugs</div><div class="ev-time">16:00 - 17:00</div></div>`;
+                
+                weekHtml += `</div>`;
+            }
+            weekGrid.innerHTML = weekHtml;
+        }
+
+        // --- 8. Drag and Drop Logic ---
+        let draggedItem = null;
+
+        function setupDragAndDrop() {
+            const events = document.querySelectorAll('.event-block');
+            const dropzones = document.querySelectorAll('.dropzone');
+
+            events.forEach(event => attachDragEvents(event));
+
+            dropzones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault(); // Cho phép drop
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', e => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (draggedItem) {
+                        // Tính toán vị trí drop dựa trên trục Y, làm tròn mỗi 30 phút (40px)
+                        const rect = zone.getBoundingClientRect();
+                        const scrollY = document.getElementById('cal-scroll').scrollTop;
+                        let yOffset = e.clientY - rect.top + scrollY;
+                        
+                        // Khống chế không cho kéo ra ngoài 24h
+                        let newTop = Math.max(0, Math.round(yOffset / 40) * 40); 
+                        
+                        // Gắn item vào cột mới (để kéo qua lại giữa các ngày)
+                        zone.appendChild(draggedItem);
+                        draggedItem.style.top = `${newTop}px`;
+                        
+                        // Cập nhật lại Text giờ (Visual update)
+                        updateTimeText(draggedItem, newTop);
+                    }
+                });
+            });
+        }
+
+        function attachDragEvents(element) {
+            element.addEventListener('dragstart', function(e) {
+                draggedItem = this;
+                setTimeout(() => this.classList.add('dragging'), 0);
+            });
+            element.addEventListener('dragend', function(e) {
+                setTimeout(() => {
+                    this.classList.remove('dragging');
+                    draggedItem = null;
+                }, 0);
+            });
+        }
+
+        function updateTimeText(element, topPx) {
+            const heightPx = parseInt(element.style.height || 0);
+            const startHour = Math.floor(topPx / 80);
+            const startMin = (topPx % 80) === 40 ? 30 : 0;
+            const endTop = topPx + heightPx;
+            const endHour = Math.floor(endTop / 80);
+            const endMin = (endTop % 80) === 40 ? 30 : 0;
+            
+            const formatTime = (h, m) => `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+            const timeDiv = element.querySelector('.ev-time');
+            if(timeDiv) {
+                timeDiv.innerText = `${formatTime(startHour, startMin)} - ${formatTime(endHour, endMin)}`;
+            }
+        }
+
+        // --- 9. Fix Lỗi Chọn Ngày (Date Picker) ---
+        function setupDatePicker() {
+            const mainDisplay = document.getElementById('main-date-display');
+            const dpDays = document.querySelectorAll('#dp-grid-days .dp-day:not(.muted)');
+            const miniDays = document.querySelectorAll('#mini-grid-days .m-day:not(.muted)');
+            const weekHeaderDays = document.querySelectorAll('#week-header .wh-day');
+
+            // Hàm dùng chung để update ngày
+            function selectDate(dayNumber) {
+                // Update dropdown
+                dpDays.forEach(d => {
+                    d.classList.remove('active');
+                    if(d.innerText === dayNumber) d.classList.add('active');
+                });
+                // Update mini cal
+                miniDays.forEach(d => {
+                    d.classList.remove('active');
+                    if(d.innerText === dayNumber) d.classList.add('active');
+                });
+                // Cập nhật chữ chính
+                const htmlText = `Apr ${dayNumber.padStart(2, '0')}, 2026 <i class="fa-solid fa-chevron-down" style="font-size:14px; color: var(--primary);"></i>`;
+                // Phải insert cẩn thận vì dropdown nằm trong div này
+                const dropdownHtml = document.getElementById('drop-datepicker').outerHTML;
+                mainDisplay.innerHTML = htmlText + dropdownHtml;
+                
+                // Update week view header giả lập
+                weekHeaderDays.forEach(wd => wd.classList.remove('active'));
+                const fakeIndex = (parseInt(dayNumber) % 7); // Demo logic
+                if(weekHeaderDays[fakeIndex]) weekHeaderDays[fakeIndex].classList.add('active');
+            }
+
+            // Gắn event cho Lịch dropdown
+            document.addEventListener('click', function(e) {
+                if(e.target.classList.contains('dp-day') && !e.target.classList.contains('muted')) {
+                    selectDate(e.target.innerText);
+                }
+                if(e.target.classList.contains('m-day') && !e.target.classList.contains('muted')) {
+                    selectDate(e.target.innerText);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
