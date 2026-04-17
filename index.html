@@ -3,44 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Group 8 - Enterprise Application Dashboard</title>
+    <title>Group 8 - Enterprise Dashboard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ================= 1. DESIGN TOKENS & VARIABLES ================= */
+        /* ================= 1. DESIGN TOKENS ================= */
         :root {
-            --bg-main: #F4F6F8;
+            --bg-main: #F4F7FE;
             --white: #FFFFFF;
-            --text-main: #1C1D22;
-            --text-gray: #4A4C56;
-            --text-muted: #6B6D7A;
-            --primary: #546FFF;
-            --primary-light: #BAC8FF;
-            --search-bg: #F5F6FA;
-            --border-color: #E4E6EB;
+            --text-main: #1B2559;
+            --text-gray: #475467;
+            --text-muted: #A3AED0;
+            --primary: #4318FF;
+            --primary-light: #E9E3FF;
+            --search-bg: #F4F7FE;
+            --border-color: #E0E5F2;
             --border-radius: 20px;
             
-            /* Easing mượt mà như Apple */
-            --transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            --transition-fast: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-
-            /* Event Colors */
-            --e-green-bg: #BDFFDB; --e-green-bd: #8FDCB2; --e-green-txt: #2C5A41;
-            --e-red-bg: #FFDDDD; --e-red-bd: #FDB7B7; --e-red-txt: #721818;
-            --e-blue-bg: #BFC6FF; --e-blue-bd: #939EFF; --e-blue-txt: #131C6D;
-            --e-purple-bg: #D6C8FF; --e-purple-bd: #A384FF; --e-purple-txt: #341D76;
-            --e-yellow-bg: #FFEBB7; --e-yellow-bd: #E7C160; --e-yellow-txt: #684D08;
-            --e-purple-dark: #6438E0; --e-purple-dark-bd: #3A14A8;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            --e-green-bg: #EAF9F2; --e-green-bd: #48C78E; --e-green-txt: #05854C;
+            --e-red-bg: #FEF0F0; --e-red-bd: #EE5D50; --e-red-txt: #B3261E;
+            --e-blue-bg: #E8F0FE; --e-blue-bd: #4285F4; --e-blue-txt: #174EA6;
+            --e-purple-bg: #F4F0FF; --e-purple-bd: #8B5CF6; --e-purple-txt: #5B21B6;
+            --e-yellow-bg: #FFF8E6; --e-yellow-bd: #F5B000; --e-yellow-txt: #9D7000;
         }
 
-        /* ================= 2. GLOBAL RESET & SCROLLBAR ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background-color: #E8EAED;
+            background-color: #E2E8F0;
             font-family: 'Poppins', sans-serif;
             color: var(--text-main);
             height: 100vh;
@@ -49,19 +44,18 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Scrollbar tinh tế */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
-        /* ================= 3. LAYOUT STRUCTURE ================= */
+        /* ================= 2. LAYOUT CHÍNH ================= */
         .app-container {
             width: 1440px; height: 944px;
             background: var(--bg-main);
-            border-radius: 24px;
+            border-radius: 30px;
             position: relative;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.15), 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 40px 100px rgba(17, 12, 46, 0.1);
             overflow: hidden; display: flex;
         }
 
@@ -71,291 +65,286 @@
             overflow: hidden;
         }
 
-        /* ================= 4. AUTHENTICATION MODULE ================= */
+        /* ================= 3. AUTHENTICATION ================= */
         .auth-container {
             position: absolute; inset: 0;
             background: var(--bg-main);
             display: flex; justify-content: center; align-items: center;
             z-index: 1000; 
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
-            will-change: transform, opacity;
         }
         .auth-container.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none;}
 
         .auth-box {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 30px; width: 640px; padding: 45px 60px;
+            background: var(--white);
+            border-radius: 30px; width: 560px; padding: 50px 60px;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.05);
-            position: relative; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            position: relative;
         }
-        .auth-box h2 { font-size: 34px; font-weight: 700; color: #111; margin: 20px 0 40px 0; letter-spacing: -0.5px;}
+        .auth-box h2 { font-size: 32px; font-weight: 700; color: var(--text-main); margin: 20px 0 40px; letter-spacing: -0.5px;}
         
         .form-group { width: 100%; margin-bottom: 24px; position: relative; }
         .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-gray); margin-bottom: 8px; }
         .form-group input { 
-            width: 100%; height: 58px; 
-            border: 2px solid var(--border-color);
-            background: rgba(255,255,255,0.9);
-            border-radius: 14px; padding: 0 20px; font-family: 'Poppins'; font-size: 16px;
-            transition: var(--transition-fast);
+            width: 100%; height: 56px; 
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            border-radius: 16px; padding: 0 20px; font-family: 'Poppins'; font-size: 15px;
+            transition: var(--transition);
         }
         .form-group input:focus { 
-            border-color: var(--primary); background: #FFF; outline: none; 
-            box-shadow: 0 0 0 4px rgba(84,111,255,0.15);
+            border-color: var(--primary); outline: none; 
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
         
         .btn-auth {
-            width: 100%; height: 64px; border-radius: 20px; border: none;
-            background: #1A1C29; color: white; font-size: 18px; font-weight: 600; font-family: 'Poppins';
-            cursor: pointer; transition: var(--transition-fast); margin-top: 10px;
+            width: 100%; height: 60px; border-radius: 16px; border: none;
+            background: var(--primary); color: white; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: var(--transition); margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
         }
-        .btn-auth:hover { background: var(--primary); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(84,111,255,0.3);}
-        .btn-auth:active { transform: scale(0.97); }
+        .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(67, 24, 255, 0.3);}
+        .btn-auth:active { transform: scale(0.98); }
 
         .auth-divider { display: flex; align-items: center; gap: 20px; width: 100%; margin: 30px 0;}
         .auth-divider span { height: 1px; flex: 1; background: var(--border-color);}
-        .auth-divider p { color: var(--text-muted); font-size: 13px; font-weight: 700; letter-spacing: 1.5px;}
+        .auth-divider p { color: var(--text-muted); font-size: 12px; font-weight: 600; letter-spacing: 1px;}
 
         .btn-outline {
-            width: 100%; height: 64px; border-radius: 20px; border: 2px solid var(--border-color);
-            background: white; color: #111; font-size: 18px; font-weight: 600; font-family: 'Poppins';
-            cursor: pointer; transition: var(--transition-fast);
+            width: 100%; height: 60px; border-radius: 16px; border: 1px solid var(--border-color);
+            background: var(--search-bg); color: var(--text-main); font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
         }
-        .btn-outline:hover { background: #F8F9FA; border-color: #111; transform: translateY(-3px);}
+        .btn-outline:hover { background: var(--border-color); transform: translateY(-2px);}
 
         .auth-form { width: 100%; display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
         .auth-form.active-form { display: flex; }
 
-        .auth-footer { position: absolute; bottom: 0; width: 100%; height: 80px; display: flex; justify-content: center; align-items: center; gap: 40px; font-size: 14px; color: var(--text-muted); font-weight: 500;}
-
-        /* ================= 5. SIDEBAR NAVIGATION ================= */
+        /* ================= 4. SIDEBAR ================= */
         .sidebar {
-            width: 270px; background: var(--white);
+            width: 280px; background: var(--white);
             padding: 40px 24px; display: flex; flex-direction: column;
-            border-radius: 24px 0 0 24px; z-index: 10;
-            box-shadow: 2px 0 20px rgba(0,0,0,0.02);
+            border-radius: 30px 0 0 30px; z-index: 10;
         }
-        .logo { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; padding-left: 8px; }
-        .logo i { font-size: 28px; color: white; background: var(--primary); padding: 12px; border-radius: 14px; box-shadow: 0 8px 20px rgba(84,111,255,0.3);}
-        .logo span { font-family: 'Montserrat'; font-size: 26px; font-weight: 800; color: #111; letter-spacing: -0.5px;}
+        .logo { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; padding-left: 10px; }
+        .logo i { font-size: 28px; color: var(--primary); }
+        .logo span { font-family: 'Montserrat'; font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;}
         
-        .nav-menu { display: flex; flex-direction: column; gap: 8px; }
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
         .nav-item {
             display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 16px;
             font-size: 16px; font-weight: 600; cursor: pointer; color: var(--text-muted); 
-            transition: var(--transition-fast);
+            transition: var(--transition);
         }
         .nav-item i { font-size: 20px; width: 24px; text-align: center; }
-        .nav-item:hover { color: var(--text-main); background: var(--search-bg); transform: translateX(4px); }
-        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 25px rgba(84, 111, 255, 0.35); transform: translateX(0);}
+        .nav-item:hover { color: var(--primary); background: var(--search-bg); transform: translateX(5px); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2); transform: translateX(0);}
 
-        /* ================= 6. HEADER & DROPDOWNS ================= */
+        /* ================= 5. HEADER ================= */
         .header {
-            height: 84px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border-radius: 24px;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 30px;
+            height: 80px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); border-radius: 20px;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 24px;
             margin-bottom: 30px; position: relative; z-index: 50;
-            border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); flex-shrink: 0;
+            border: 1px solid var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); flex-shrink: 0;
         }
         .search-bar { 
-            background: var(--white); width: 340px; height: 52px; border-radius: 16px; 
+            background: var(--white); width: 320px; height: 48px; border-radius: 30px; 
             display: flex; align-items: center; padding: 0 20px; gap: 14px; transition: var(--transition);
-            border: 1px solid var(--border-color);
         }
-        .search-bar:focus-within { width: 400px; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(84,111,255,0.1); }
-        .search-bar input { border: none; background: transparent; outline: none; font-family: 'Poppins'; font-size: 15px; width: 100%; color: var(--text-main);}
+        .search-bar:focus-within { width: 380px; box-shadow: 0 0 0 3px var(--primary-light); }
+        .search-bar input { border: none; background: transparent; outline: none; font-family: 'Poppins'; font-size: 14px; width: 100%; color: var(--text-main);}
+        .search-bar i { color: var(--text-muted); }
         
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .noti-btn { 
-            width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: var(--transition-fast); font-size: 22px; background: #fff; border: 1px solid var(--border-color); color: var(--text-gray);
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: var(--transition); font-size: 20px; background: var(--white); color: var(--text-muted);
         }
-        .noti-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(84,111,255,0.25);}
+        .noti-btn:hover { color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-2px);}
         
         .user-profile { 
-            display: flex; align-items: center; gap: 14px; cursor: pointer; padding: 6px 16px 6px 6px; 
-            border-radius: 20px; transition: var(--transition-fast); background: #fff; border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 14px; cursor: pointer; padding: 4px 16px 4px 4px; 
+            border-radius: 30px; transition: var(--transition); background: var(--white);
         }
-        .user-profile:hover { border-color: var(--primary); background: var(--search-bg); }
-        .greeting { font-weight: 600; font-size: 15px;}
-        .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #8979FF); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .user-profile:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .greeting { font-weight: 700; font-size: 14px;}
+        .avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 
-        /* Dropdown Components */
         .dropdown {
-            position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); 
-            border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            opacity: 0; visibility: hidden; transform: translateY(15px) scale(0.95);
-            transition: var(--transition-fast); z-index: 100;
+            position: absolute; background: var(--white);
+            border: 1px solid var(--border-color); border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            opacity: 0; visibility: hidden; transform: translateY(15px);
+            transition: var(--transition); z-index: 100;
         }
-        .dropdown.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
         
-        .noti-drop { top: 75px; right: 220px; width: 340px; padding: 20px; }
+        .noti-drop { top: 75px; right: 200px; width: 320px; padding: 20px; }
         .noti-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 20px; font-size: 16px;}
         .noti-body { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; background: var(--search-bg); padding: 16px; border-radius: 14px;}
 
-        .profile-drop { top: 75px; right: 0; width: 250px; padding: 12px; display: flex; flex-direction: column; gap: 4px;}
-        .drop-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; font-weight: 600; font-size: 15px; border-radius: 14px; cursor: pointer; transition: var(--transition-fast); color: var(--text-gray);}
-        .drop-item:hover { background: rgba(84, 111, 255, 0.08); color: var(--primary); transform: translateX(4px); }
+        .profile-drop { top: 75px; right: 0; width: 220px; padding: 12px; display: flex; flex-direction: column; gap: 4px;}
+        .drop-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; font-weight: 600; font-size: 14px; border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-gray);}
+        .drop-item:hover { background: var(--search-bg); color: var(--primary); }
 
-        /* ================= 7. TABS & VIEW LOGIC ================= */
+        /* ================= 6. TABS & CARDS ================= */
         .page-content { flex: 1; position: relative; overflow-y: auto; overflow-x: hidden; opacity: 0; visibility: hidden; display: none; padding-bottom: 20px; }
         .page-content.active-view { opacity: 1; visibility: visible; display: block; animation: fadeIn 0.4s ease-out; }
 
-        /* Hardware Accelerated Animations */
-        .active-view .stagger-1 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.1s; opacity: 0; will-change: transform, opacity;}
-        .active-view .stagger-2 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.2s; opacity: 0; will-change: transform, opacity;}
-        .active-view .stagger-3 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.3s; opacity: 0; will-change: transform, opacity;}
+        .active-view .stagger-1 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.1s; opacity: 0; }
+        .active-view .stagger-2 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.2s; opacity: 0; }
+        .active-view .stagger-3 { animation: slideUpFade 0.5s ease-out forwards; animation-delay: 0.3s; opacity: 0; }
 
-        /* Card System */
-        .card { background: var(--white); border-radius: 24px; transition: var(--transition-fast); border: 1px solid rgba(0,0,0,0.03);}
-        .card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.06); transform: translateY(-4px); border-color: rgba(84,111,255,0.15);}
+        .card { background: var(--white); border-radius: 20px; transition: var(--transition); border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
+        .card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.05); transform: translateY(-4px);}
 
-        /* --- OVERVIEW TAB --- */
-        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 30px; }
-        .stat-card { height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; position: relative; overflow: hidden; cursor: default;}
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--primary); border-radius: 6px 0 0 6px; opacity: 0; transition: var(--transition-fast);}
-        .stat-card:hover::before { opacity: 1; }
-        .stat-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--text-muted);}
-        .stat-num { font-size: 42px; font-weight: 800; color: var(--text-main); letter-spacing: -1px;}
+        /* --- OVERVIEW --- */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px; }
+        .stat-card { height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;}
+        .stat-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-muted);}
+        .stat-num { font-size: 36px; font-weight: 700; color: var(--text-main);}
 
-        .main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 30px; }
-        .chart-card { padding: 30px; height: 420px; display: flex; flex-direction: column; }
-        .chart-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 25px; }
+        .main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; }
+        .chart-card { padding: 30px; height: 400px; display: flex; flex-direction: column; }
+        .chart-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
         
-        .recent-card { margin-top: 30px; padding: 25px 30px; display: flex; flex-direction: column; justify-content: center; height: 130px;}
-        .activity-tags { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; align-items: center;}
-        
-        /* Chống rớt dòng cho các Tag */
-        .tag { 
-            background: #F8F9FA; padding: 10px 20px; border-radius: 30px; 
-            font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; 
-            transition: var(--transition-fast); border: 1px solid var(--border-color);
-            white-space: nowrap; flex-shrink: 0; cursor: pointer;
-        }
-        .tag:hover { background: var(--e-blue-bg); color: var(--e-blue-txt); border-color: var(--primary-light); transform: translateY(-2px);}
-        .tag-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;}
+        .recent-card { margin-top: 24px; padding: 25px 30px; display: flex; flex-direction: column; justify-content: center; height: 130px;}
+        .activity-tags { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; align-items: center;}
+        .tag { background: var(--search-bg); padding: 10px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: var(--transition); white-space: nowrap; flex-shrink: 0; cursor: pointer; color: var(--text-gray);}
+        .tag:hover { background: var(--primary-light); color: var(--primary); transform: translateY(-2px);}
+        .tag-icon { width: 28px; height: 28px; background: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
 
-        .deadline-card { padding: 30px; height: 580px; display: flex; flex-direction: column;}
+        .deadline-card { padding: 30px; height: 554px; display: flex; flex-direction: column;}
         .deadline-list { flex: 1; overflow-y: auto; padding-right: 5px;}
-        .dl-item { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; margin-bottom: 12px; transition: var(--transition-fast); cursor: pointer; background: #F8F9FA; border: 1px solid transparent;}
-        .dl-item:hover { background: #fff; border-color: var(--primary-light); box-shadow: 0 8px 20px rgba(0,0,0,0.05); transform: translateX(4px);}
-        .dl-num { font-weight: 800; font-size: 20px; width: 30px; color: var(--text-light); text-align: center;}
+        .dl-item { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; margin-bottom: 12px; transition: var(--transition); cursor: pointer; border: 1px solid var(--border-color);}
+        .dl-item:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(67, 24, 255, 0.05); transform: translateX(4px);}
+        .dl-num { font-weight: 800; font-size: 20px; width: 30px; color: var(--text-muted); text-align: center;}
         .dl-info { flex: 1; }
-        .dl-info strong { font-size: 16px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 2px;}
-        .dl-info p { font-size: 13px; color: var(--text-muted); font-weight: 500;}
-        .dl-check { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast); font-size: 12px;}
-        .dl-item.done { opacity: 0.6; background: transparent; border-color: var(--border-color);}
+        .dl-info strong { font-size: 15px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 2px;}
+        .dl-info p { font-size: 12px; color: var(--text-muted); font-weight: 500;}
+        .dl-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 12px;}
+        .dl-item.done { opacity: 0.6; background: var(--search-bg); border-color: transparent;}
         .dl-item.done .dl-info strong { text-decoration: line-through; }
         .dl-item.done .dl-check { background: var(--e-green-txt); border-color: var(--e-green-txt); color: white;}
 
-        /* --- TASK TAB --- */
-        .ts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        /* --- TASK --- */
+        .ts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         .ts-header h2 { font-size: 24px; font-weight: 700;}
         
         .btn-primary { 
-            background: linear-gradient(135deg, var(--primary), #8979FF); color: white; border: none; 
-            padding: 12px 24px; border-radius: 16px; font-weight: 600; font-size: 15px; cursor: pointer; 
-            transition: var(--transition-fast); box-shadow: 0 8px 20px rgba(84, 111, 255, 0.3); display: flex; align-items: center; gap: 8px;
+            background: var(--primary); color: white; border: none; 
+            padding: 12px 24px; border-radius: 16px; font-weight: 600; font-size: 14px; cursor: pointer; 
+            transition: var(--transition); box-shadow: 0 4px 15px rgba(67, 24, 255, 0.2); display: flex; align-items: center; gap: 8px;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(84, 111, 255, 0.4); filter: brightness(1.1);}
-        .btn-primary:active { transform: translateY(0) scale(0.97); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(67, 24, 255, 0.3);}
         
         .task-list { display: flex; gap: 24px; overflow-x: auto; padding: 10px 10px 30px 10px; margin: 0 -10px;}
-        .t-card { min-width: 340px; background: var(--white); border-radius: 24px; padding: 20px; border: 1px solid var(--border-color); transition: var(--transition-fast); cursor: pointer;}
-        .t-card:hover { transform: translateY(-6px); box-shadow: 0 25px 50px rgba(0,0,0,0.08); border-color: var(--primary-light);}
-        .t-img { width: 100%; height: 160px; border-radius: 16px; object-fit: cover; margin-bottom: 20px; transition: var(--transition);}
-        .t-card:hover .t-img { transform: scale(1.02); }
-        .t-title { font-weight: 700; font-size: 18px; margin-bottom: 4px;}
-        .t-sub { font-weight: 500; font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
-        .prog-info { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; margin-bottom: 12px; color: var(--text-gray);}
-        .prog-track { width: 100%; height: 8px; background: #E8EAED; border-radius: 8px; position: relative;}
-        .prog-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #8979FF); border-radius: 8px;}
-        .prog-thumb { width: 20px; height: 20px; background: var(--primary); border: 3px solid white; border-radius: 50%; position: absolute; top: -6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
-        .t-footer { margin-top: 25px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: var(--text-muted); padding-top: 16px; border-top: 1px solid var(--border-color);}
-
-        /* --- CALENDAR TAB (DATA-DRIVEN) --- */
-        .calendar-wrapper { background: var(--white); border-radius: 24px; height: 100%; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color);}
         
-        .cal-header { display: flex; justify-content: space-between; padding: 20px 30px; align-items: center; border-bottom: 1px solid var(--border-color); position: relative;}
-        .cal-nav { display: flex; align-items: center; gap: 15px; font-weight: 700; font-size: 18px;}
-        .btn-icon { width: 44px; height: 44px; border: 1px solid var(--border-color); border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-fast); color: var(--text-main);}
-        .btn-icon:hover { background: var(--search-bg); border-color: var(--primary-light); color: var(--primary);}
-        .cal-date { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 16px; border-radius: 14px; transition: var(--transition-fast);}
+        .t-card { 
+            min-width: 320px; background: var(--white); border-radius: 24px; padding: 24px; 
+            border: none; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); transition: var(--transition); cursor: pointer;
+        }
+        .t-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1); }
+        .t-img { width: 100%; height: 160px; border-radius: 16px; object-fit: cover; margin-bottom: 20px;}
+        .t-title { font-weight: 800; font-size: 18px; margin-bottom: 4px; color: var(--text-main);}
+        .t-sub { font-weight: 600; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        .prog-info { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-bottom: 12px; color: var(--text-gray);}
+        
+        .prog-track { width: 100%; height: 10px; background: var(--search-bg); border-radius: 10px; position: relative;}
+        .prog-fill { height: 100%; background: var(--primary); border-radius: 10px;}
+        .prog-thumb { 
+            width: 20px; height: 20px; background: var(--primary); 
+            border: 4px solid var(--white); border-radius: 50%; 
+            position: absolute; top: -5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        
+        .t-footer { margin-top: 24px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; color: var(--text-gray); padding-top: 16px; border-top: 1px solid var(--border-color);}
+
+        /* --- CALENDAR --- */
+        .calendar-wrapper { background: var(--white); border-radius: 24px; height: 100%; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);}
+        
+        .cal-header { display: flex; justify-content: space-between; padding: 20px 24px; align-items: center; border-bottom: 1px solid var(--border-color); position: relative; z-index: 20;}
+        .cal-nav { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 16px;}
+        .btn-icon { width: 40px; height: 40px; border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); color: var(--text-main);}
+        .btn-icon:hover { background: var(--search-bg); color: var(--primary);}
+        .cal-date { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; border-radius: 12px; transition: var(--transition);}
         .cal-date:hover { background: var(--search-bg);}
         
-        .date-picker-drop { position: absolute; top: 70px; left: 0; width: 300px; padding: 24px; }
-        .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 14px;}
-        .dp-day { padding: 10px 0; cursor: pointer; border-radius: 10px; font-weight: 600; transition: var(--transition-fast);}
+        .date-picker-drop { position: absolute; top: 65px; left: 0; width: 300px; padding: 24px; }
+        .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 13px;}
+        .dp-day { padding: 10px 0; cursor: pointer; border-radius: 10px; font-weight: 600; transition: var(--transition);}
         .dp-day:hover:not(.muted) { background: var(--primary-light); color: var(--primary);}
         .dp-day.muted { opacity: 0.3; pointer-events: none;}
-        .dp-day.active { background: var(--primary); color: white; box-shadow: 0 6px 15px rgba(84,111,255,0.4);}
+        .dp-day.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(67,24,255,0.3);}
 
-        .cal-view-switch { display: flex; background: var(--search-bg); border-radius: 16px; padding: 6px; border: 1px solid var(--border-color);}
-        .view-btn { padding: 8px 24px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 12px; transition: var(--transition-fast); color: var(--text-muted);}
-        .view-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
+        .cal-view-switch { display: flex; background: var(--search-bg); border-radius: 14px; padding: 4px;}
+        .view-btn { padding: 8px 24px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: var(--transition); color: var(--text-muted);}
+        .view-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
 
         .cal-body { display: flex; flex: 1; overflow-y: hidden; position: relative;}
         
-        .cal-sidebar { width: 320px; padding: 30px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; flex-shrink: 0; background: #FAFBFC;}
-        .mini-grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 5px; text-align: center; font-size: 14px; font-weight: 600;}
-        .m-day { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 12px; cursor: pointer; transition: var(--transition-fast);}
+        .cal-sidebar { width: 300px; padding: 24px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; flex-shrink: 0; background: var(--white);}
+        .mini-grid { display: grid; grid-template-columns: repeat(7, 34px); gap: 4px; text-align: center; font-size: 13px; font-weight: 600;}
+        .m-day { width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; border-radius: 10px; cursor: pointer; transition: var(--transition);}
         .m-day:hover:not(.muted) { background: var(--primary-light); color: var(--primary);}
         .m-day.muted { opacity: 0.3; pointer-events: none;}
-        .m-day.active { background: var(--primary); color: white; box-shadow: 0 6px 15px rgba(84,111,255,0.4);}
+        .m-day.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(67,24,255,0.3);}
 
-        .cal-main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white;}
+        .cal-main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--white);}
         
-        .week-header { display: flex; height: 75px; border-bottom: 1px solid var(--border-color); background: white; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
-        .wh-time-gap { width: 70px; border-right: 1px solid var(--border-color); }
-        .wh-day { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border-color); font-size: 13px; font-weight: 600; color: var(--text-muted); transition: var(--transition-fast);}
-        .wh-day span.num { font-size: 26px; font-weight: 700; color: var(--text-main); margin-top: 2px;}
-        .wh-day.active { background: rgba(84, 111, 255, 0.04); border-bottom: 4px solid var(--primary); color: var(--primary);}
+        .week-header { display: flex; height: 70px; border-bottom: 1px solid var(--border-color); background: var(--white); z-index: 10;}
+        .wh-time-gap { width: 60px; border-right: 1px solid var(--border-color); flex-shrink: 0;}
+        .wh-day { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border-color); font-size: 12px; font-weight: 600; color: var(--text-muted); transition: var(--transition);}
+        .wh-day span.num { font-size: 24px; font-weight: 700; color: var(--text-main); margin-top: 2px;}
+        .wh-day.active { border-bottom: 3px solid var(--primary); color: var(--primary); background: var(--search-bg);}
         .wh-day.active span.num { color: var(--primary);}
-        .wh-day.weekend { background: #F9FAFB; }
+        .wh-day.weekend { background: #FAFCFF; }
 
-        .cal-scroll-area { flex: 1; overflow-y: auto; display: flex; position: relative; scroll-behavior: smooth;}
+        .cal-scroll-area { flex: 1; overflow-y: auto; display: flex; position: relative; scroll-behavior: smooth; background: var(--white);}
         
-        .time-col { width: 70px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; background: #FAFBFC;}
-        .time-label { height: 80px; font-size: 13px; color: var(--text-muted); font-weight: 600; text-align: center; transform: translateY(-10px);}
+        .time-col { width: 60px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; background: var(--white); height: 1920px; }
+        .time-label { height: 80px; font-size: 12px; color: var(--text-muted); font-weight: 600; text-align: center; transform: translateY(-8px);}
 
-        .grid-wrapper { flex: 1; position: relative; display: flex; background: white;}
+        .grid-wrapper { flex: 1; position: relative; display: flex; height: 1920px; }
         
-        .day-column { flex: 1; position: relative; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; transition: background 0.2s ease;}
-        .day-column.weekend { background: #F9FAFB; }
-        .day-column.drag-over { background: rgba(84, 111, 255, 0.05) !important; outline: 2px dashed var(--primary); outline-offset: -2px;}
+        .day-column { flex: 1; position: relative; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; height: 1920px; transition: background 0.2s ease;}
+        .day-column.weekend { background: #FAFCFF; }
+        .day-column.drag-over { background: rgba(67, 24, 255, 0.03) !important; outline: 2px dashed var(--primary); outline-offset: -2px;}
         
-        .grid-cell { height: 80px; border-bottom: 1px solid var(--border-color); width: 100%; box-sizing: border-box;}
-        .grid-cell::after { content: ''; display: block; border-bottom: 1px dashed rgba(0,0,0,0.06); height: 40px;}
+        .grid-cell { height: 80px; width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--border-color);}
+        .grid-cell::after { content: ''; display: block; border-bottom: 1px dashed rgba(0,0,0,0.04); height: 40px;}
 
-        /* Drag & Drop Event Blocks */
+        /* --- SỰ KIỆN KÉO THẢ --- */
         .event-block { 
-            position: absolute; left: 6px; right: 6px; border-radius: 10px; padding: 8px 12px; 
-            font-size: 12px; font-weight: 600; cursor: grab; transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+            position: absolute; left: 4px; right: 4px; border-radius: 12px; padding: 8px 10px; 
+            font-size: 12px; font-weight: 600; cursor: grab; transition: transform 0.2s, box-shadow 0.2s;
             display: flex; flex-direction: column; overflow: hidden; justify-content: flex-start;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); z-index: 5; will-change: transform, top;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05); z-index: 5;
         }
-        .event-block:active { cursor: grabbing; z-index: 50; transform: scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.15);}
-        .event-block.dragging { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2)); z-index: 100; pointer-events: none;}
+        .event-block:active { cursor: grabbing; z-index: 50; transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.1);}
         
-        /* Fix text wrapping in Events */
-        .ev-title { display: flex; align-items: center; gap: 8px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ev-time { font-weight: 600; font-size: 11px; margin-top: 6px; opacity: 0.8;}
+        /* Cập nhật style khi đang kéo: bóng to ra, mờ đi một chút, chặn event chuột để vùng thả có thể nhận lệnh */
+        .event-block.dragging { 
+            opacity: 0.95; 
+            transform: scale(1.03); 
+            z-index: 100; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            pointer-events: none; 
+        }
         
-        /* Event Data Colors */
-        .e-green { background: var(--e-green-bg); border-left: 5px solid var(--e-green-bd); color: var(--e-green-txt); }
-        .e-red { background: var(--e-red-bg); border-left: 5px solid var(--e-red-bd); color: var(--e-red-txt); }
-        .e-blue { background: var(--e-blue-bg); border-left: 5px solid var(--e-blue-bd); color: var(--e-blue-txt); }
-        .e-purple { background: var(--e-purple-bg); border-left: 5px solid var(--e-purple-bd); color: var(--e-purple-txt); }
-        .e-yellow { background: var(--e-yellow-bg); border-left: 5px solid var(--e-yellow-bd); color: var(--e-yellow-txt); }
-        .e-purple-dark { background: var(--e-purple-dark); border-left: 5px solid var(--e-purple-dark-bd); color: white; }
+        .ev-title { display: flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700;}
+        .ev-time { font-weight: 600; font-size: 11px; margin-top: 4px; opacity: 0.8;}
+        
+        .e-green { background: var(--e-green-bg); border-left: 4px solid var(--e-green-bd); color: var(--e-green-txt); }
+        .e-red { background: var(--e-red-bg); border-left: 4px solid var(--e-red-bd); color: var(--e-red-txt); }
+        .e-blue { background: var(--e-blue-bg); border-left: 4px solid var(--e-blue-bd); color: var(--e-blue-txt); }
+        .e-purple { background: var(--e-purple-bg); border-left: 4px solid var(--e-purple-bd); color: var(--e-purple-txt); }
+        .e-yellow { background: var(--e-yellow-bg); border-left: 4px solid var(--e-yellow-bd); color: var(--e-yellow-txt); }
 
-        /* KEYFRAMES */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -375,8 +364,8 @@
             <div class="auth-form" id="form-signup">
                 <div class="logo" style="margin-bottom: 0;"><i class="fa-solid fa-layer-group"></i></div>
                 <h2>Create an account</h2>
-                <p style="margin-top:-30px; margin-bottom:30px; font-size:15px; color:var(--text-muted);">Already have an account? <a href="#" onclick="AppLogic.switchAuth('signin')" style="color:var(--primary); font-weight:700; text-decoration:none;">Log in</a></p>
-                <div style="display:flex; gap:20px; width:100%;">
+                <p style="margin-top:-30px; margin-bottom:30px; font-size:14px; color:var(--text-muted);">Already have an account? <a href="#" onclick="AppLogic.switchAuth('signin')" style="color:var(--primary); font-weight:700; text-decoration:none;">Log in</a></p>
+                <div style="display:flex; gap:16px; width:100%;">
                     <div class="form-group"><label>Name</label><input type="text" placeholder="John Doe"></div>
                     <div class="form-group"><label>Email</label><input type="email" placeholder="example@email.com"></div>
                 </div>
@@ -409,13 +398,13 @@
 
                     <div class="user-profile" onclick="AppLogic.toggleDrop(event, 'drop-profile')">
                         <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
-                        <span class="greeting">Hello, User!</span>
-                        <i class="fa-solid fa-caret-down" style="font-size:14px; margin-right:5px; color:var(--text-muted);"></i>
+                        <span class="greeting">Ngô Bình Minh</span>
+                        <i class="fa-solid fa-caret-down" style="font-size:12px; margin-right:4px; color:var(--text-muted);"></i>
                     </div>
                     <div class="dropdown profile-drop" id="drop-profile">
                         <div class="drop-item"><i class="fa-regular fa-user-circle"></i> Profile</div>
                         <div class="drop-item"><i class="fa-solid fa-gear"></i> Settings</div>
-                        <div style="height:1px; background:var(--border-color); margin:5px 0;"></div>
+                        <div style="height:1px; background:var(--border-color); margin:4px 0;"></div>
                         <div class="drop-item" onclick="AppLogic.logout()" style="color:var(--e-red-txt);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
                     </div>
                 </div>
@@ -435,11 +424,11 @@
                             <div style="flex:1; position:relative;"><canvas id="projectChart"></canvas></div>
                         </div>
                         <div class="card recent-card stagger-3">
-                            <h3 style="font-size:18px; font-weight:700; margin-bottom:15px;">Recent Activities</h3>
+                            <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Recent Activities</h3>
                             <div class="activity-tags">
                                 <div class="tag"><div class="tag-icon"><i class="fa-solid fa-pen"></i></div> Created Wireframe</div>
                                 <div class="tag"><div class="tag-icon" style="background:var(--e-green-txt);"><i class="fa-solid fa-check"></i></div> Uploaded Assets</div>
-                                <div class="tag"><div class="tag-icon" style="background:var(--e-purple-txt);"><i class="fa-solid fa-comment"></i></div> Client Meeting</div>
+                                <div class="tag"><div class="tag-icon" style="background:var(--e-purple-txt); color:white;"><i class="fa-solid fa-comment"></i></div> Client Meeting</div>
                             </div>
                         </div>
                     </div>
@@ -470,14 +459,14 @@
                             <div class="t-title">Creating Web UI</div><div class="t-sub">UX Design Role</div>
                             <div class="prog-info"><span>Progress</span><span>85%</span></div>
                             <div class="prog-track"><div class="prog-fill" style="width:85%;"></div><div class="prog-thumb" style="left:calc(85% - 10px);"></div></div>
-                            <div class="t-footer"><i class="fa-regular fa-clock"></i> 4 Hours Left</div>
+                            <div class="t-footer"><i class="fa-regular fa-clock" style="font-size:16px;"></i> 4 Hours Left</div>
                         </div>
                         <div class="t-card">
                             <img class="t-img" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80">
                             <div class="t-title">Fixing Bugs</div><div class="t-sub">Frontend Team</div>
                             <div class="prog-info"><span>Progress</span><span>40%</span></div>
                             <div class="prog-track"><div class="prog-fill" style="width:40%; background:var(--e-red-txt);"></div><div class="prog-thumb" style="left:calc(40% - 10px); background:var(--e-red-txt);"></div></div>
-                            <div class="t-footer" style="color:var(--e-red-txt);"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</div>
+                            <div class="t-footer" style="color:var(--e-red-txt);"><i class="fa-solid fa-triangle-exclamation" style="font-size:16px;"></i> Overdue</div>
                         </div>
                     </div>
                 </div>
@@ -489,13 +478,13 @@
                         <div class="cal-nav">
                             <div class="btn-icon"><i class="fa-solid fa-chevron-left"></i></div>
                             <div class="cal-date" onclick="AppLogic.toggleDrop(event, 'drop-datepicker')" id="main-date-display">
-                                Apr 16, 2026 <i class="fa-solid fa-chevron-down" style="font-size:14px; color:var(--primary);"></i>
+                                Apr 16, 2026 <i class="fa-solid fa-chevron-down" style="font-size:12px; color:var(--primary);"></i>
                                 <div class="dropdown date-picker-drop" id="drop-datepicker">
-                                    <h4 style="margin-bottom:15px; font-size:15px; text-align:center;">April 2026</h4>
+                                    <h4 style="margin-bottom:15px; font-size:14px; text-align:center;">April 2026</h4>
                                     <div class="dp-grid" id="dp-grid-days"></div> 
                                 </div>
                             </div>
-                            <div style="color:var(--text-muted); font-size:15px; font-weight:600; margin-left:10px;">Today</div>
+                            <div style="color:var(--text-muted); font-size:14px; font-weight:600; margin-left:8px;">Today</div>
                             <div class="btn-icon"><i class="fa-solid fa-chevron-right"></i></div>
                         </div>
                         <div class="cal-view-switch">
@@ -507,14 +496,14 @@
 
                     <div class="cal-body">
                         <div class="cal-sidebar" id="cal-mini-sidebar">
-                            <h4 style="margin-bottom:20px; font-size:16px;">April 2026</h4>
+                            <h4 style="margin-bottom:20px; font-size:15px;">April 2026</h4>
                             <div class="mini-grid" id="mini-grid-days"></div>
                         </div>
 
                         <div class="cal-main-area">
                             <div class="week-header" id="week-header" style="display: none;">
                                 <div class="wh-time-gap"></div>
-                                </div>
+                            </div>
 
                             <div class="cal-scroll-area" id="cal-scroll">
                                 <div class="time-col" id="time-column"></div>
@@ -524,7 +513,7 @@
                                 </div>
 
                                 <div class="grid-wrapper" id="grid-week" style="display: none;">
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -535,36 +524,25 @@
     </div>
 
     <script>
-        /**
-         * ==========================================
-         * ENTERPRISE VANILLA JS ARCHITECTURE
-         * Data-Driven Approach (React-like Logic)
-         * ==========================================
-         */
-
-        // --- 1. MOCK DATA (Dữ liệu sự kiện giả lập) ---
         const MOCK_EVENTS = [
-            // Day View Events
             { id: 'ev1', title: '🧟‍♂️ Team Standup', time: '09:00 - 10:00', color: 'e-green', top: 720, height: 80, view: 'day' },
             { id: 'ev2', title: '☕ Quick Review', time: '11:00 - 11:30', color: 'e-red', top: 880, height: 40, view: 'day' },
             { id: 'ev3', title: '🐫 Lunch Break', time: '12:00 - 13:00', color: 'e-yellow', top: 960, height: 80, view: 'day' },
             { id: 'ev4', title: '🧠 Client Presentation', time: '14:00 - 15:30', color: 'e-blue', top: 1120, height: 120, view: 'day' },
-            { id: 'ev5', title: '🎉 Wrap up & Deploy', time: '16:00 - 17:00', color: 'e-purple-dark', top: 1280, height: 80, view: 'day' },
+            { id: 'ev5', title: '🎉 Wrap up & Deploy', time: '16:00 - 17:00', color: 'e-purple', top: 1280, height: 80, view: 'day' },
             
-            // Week View Events (dayTarget: 0=Mon, 1=Tue,...)
             { id: 'we1', title: '🧟‍♂️ Design Sync', time: '09:00 - 10:00', color: 'e-green', top: 720, height: 80, view: 'week', dayTarget: 0 },
             { id: 'we2', title: '🧠 Client Present', time: '14:00 - 15:30', color: 'e-blue', top: 1120, height: 120, view: 'week', dayTarget: 3 },
             { id: 'we3', title: '🚨 Fix Bugs', time: '16:00 - 17:00', color: 'e-red', top: 1280, height: 80, view: 'week', dayTarget: 4 }
         ];
 
-        // --- 2. CORE LOGIC (Quản lý trạng thái và chức năng) ---
         const AppLogic = {
             chartRendered: false,
 
             login: () => {
                 document.getElementById('auth-screen').classList.add('hidden');
-                setTimeout(AppDOM.initChart, 500); // Đợi CSS trượt xong mới render biểu đồ
-                AppDOM.initCalendar(); // Render Lịch bằng JS
+                setTimeout(AppDOM.initChart, 500); 
+                AppDOM.initCalendar(); 
             },
 
             logout: () => {
@@ -583,11 +561,11 @@
 
                 document.querySelectorAll('.page-content').forEach(page => {
                     page.classList.remove('active-view');
-                    page.style.animation = 'none'; page.offsetHeight; page.style.animation = null; // Triggers reflow
+                    page.style.animation = 'none'; page.offsetHeight; page.style.animation = null; 
                 });
 
                 document.getElementById(`page-${tabId}`).classList.add('active-view');
-                if (tabId === 'calendar') setTimeout(() => document.getElementById('cal-scroll').scrollTop = 720, 100);
+                if (tabId === 'calendar') setTimeout(() => document.getElementById('cal-scroll').scrollTop = 700, 100);
             },
 
             switchCalView: (viewType, btnElement) => {
@@ -608,14 +586,13 @@
             }
         };
 
-        // --- 3. DOM RENDERING (Vẽ giao diện bằng dữ liệu) ---
         const AppDOM = {
             initChart: () => {
                 if(AppLogic.chartRendered) return;
                 const ctx = document.getElementById('projectChart').getContext('2d');
                 let gradient = ctx.createLinearGradient(0, 0, 0, 350);
-                gradient.addColorStop(0, 'rgba(84, 111, 255, 0.4)');
-                gradient.addColorStop(1, 'rgba(84, 111, 255, 0.0)');
+                gradient.addColorStop(0, 'rgba(67, 24, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(67, 24, 255, 0.0)');
 
                 new Chart(ctx, {
                     type: 'line',
@@ -623,8 +600,8 @@
                         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                         datasets: [{
                             data: [40, 60, 100, 80, 120, 150, 180, 160, 200, 170, 140, 190],
-                            borderColor: '#546FFF', backgroundColor: gradient,
-                            borderWidth: 4, pointBackgroundColor: '#546FFF',
+                            borderColor: '#4318FF', backgroundColor: gradient,
+                            borderWidth: 4, pointBackgroundColor: '#4318FF',
                             pointBorderColor: '#FFF', pointBorderWidth: 3, pointRadius: 5, fill: true, tension: 0.4
                         }]
                     },
@@ -634,17 +611,14 @@
             },
 
             initCalendar: () => {
-                // 1. Dựng cột thời gian 24h
                 let timeHtml = '<div style="height: 40px;"></div>'; 
                 for(let i=1; i<=23; i++) timeHtml += `<div class="time-label">${i.toString().padStart(2, '0')}:00</div>`;
                 document.getElementById('time-column').innerHTML = timeHtml;
 
-                // 2. Dựng lưới rỗng 24x80px cho Day View
                 const dayCol1 = document.getElementById('day-col-1');
                 dayCol1.innerHTML = ''; 
                 for(let i=0; i<24; i++) dayCol1.insertAdjacentHTML('beforeend', '<div class="grid-cell"></div>');
 
-                // 3. Dựng lưới cho Week View (7 Cột)
                 const weekGrid = document.getElementById('grid-week');
                 const weekHeader = document.getElementById('week-header');
                 let weekHtml = '', headerHtml = '<div class="wh-time-gap"></div>';
@@ -653,12 +627,10 @@
 
                 for(let d=0; d<7; d++) {
                     let isWeekend = (d===5 || d===6) ? 'weekend' : '';
-                    let isActive = d === 3 ? 'active' : ''; // Demo active on Thu 16
+                    let isActive = d === 3 ? 'active' : ''; 
                     
-                    // Vẽ Header cột
                     headerHtml += `<div class="wh-day ${isWeekend} ${isActive}"><span>${days[d]}</span><span class="num">${dates[d]}</span></div>`;
                     
-                    // Vẽ Cột Lưới
                     weekHtml += `<div class="day-column dropzone ${isWeekend}" data-day="${d}">`;
                     for(let h=0; h<24; h++) weekHtml += `<div class="grid-cell"></div>`;
                     weekHtml += `</div>`;
@@ -666,16 +638,12 @@
                 weekHeader.innerHTML = headerHtml;
                 weekGrid.innerHTML = weekHtml;
 
-                // 4. Render Date Pickers nhỏ
                 AppDOM.renderDatePickers();
-
-                // 5. Gắn Data Sự kiện vào DOM
                 AppDOM.renderEvents();
                 AppDOM.setupDragAndDrop();
             },
 
             renderDatePickers: () => {
-                // Generate simple grid for demo
                 let html = `<div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>`;
                 html += `<div class="dp-day muted m-day">30</div><div class="dp-day muted m-day">31</div>`;
                 for(let i=1; i<=26; i++) {
@@ -704,14 +672,21 @@
                 });
             },
 
-            // --- Kéo Thả Tiên Tiến (Tối ưu tọa độ chính xác 100%) ---
             setupDragAndDrop: () => {
                 let draggedItem = null;
+
+                // TẠO ẢNH TRỐNG ĐỂ XÓA BÓNG MỜ MẶC ĐỊNH CỦA TRÌNH DUYỆT
+                const emptyImage = new Image();
+                emptyImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
                 document.addEventListener('dragstart', e => {
                     if(e.target.classList.contains('event-block')) {
                         draggedItem = e.target;
+                        
+                        // Set ảnh trống thay thế cho ghost image mặc định
+                        e.dataTransfer.setDragImage(emptyImage, 0, 0);
                         e.dataTransfer.effectAllowed = "move";
+                        
                         setTimeout(() => draggedItem.classList.add('dragging'), 0);
                     }
                 });
@@ -725,38 +700,50 @@
 
                 document.querySelectorAll('.dropzone').forEach(zone => {
                     zone.addEventListener('dragover', e => {
-                        e.preventDefault(); e.dataTransfer.dropEffect = "move";
-                        zone.classList.add('drag-over');
-                    });
-                    zone.addEventListener('dragleave', e => zone.classList.remove('drag-over'));
-                    
-                    zone.addEventListener('drop', e => {
-                        e.preventDefault(); zone.classList.remove('drag-over');
+                        e.preventDefault(); 
+                        e.dataTransfer.dropEffect = "move";
+                        
                         if (draggedItem) {
-                            // Căn tọa độ y chuẩn xác theo thẻ cha (zone)
                             const rect = zone.getBoundingClientRect();
                             let yOffset = e.clientY - rect.top;
-                            // Snap grid mỗi 40px (30 phút)
-                            let newTop = Math.max(0, Math.round(yOffset / 40) * 40); 
                             
-                            // Di chuyển node HTML sang cột mới & set vị trí
-                            zone.appendChild(draggedItem);
+                            // GIỚI HẠN VƯỢT QUÁ 24H (1920px)
+                            const itemHeight = parseInt(draggedItem.style.height || 0);
+                            const maxTop = 1920 - itemHeight; // Tối đa chỉ chạm mép 24:00
+                            
+                            // Căn lưới 30 phút (40px)
+                            let newTop = Math.max(0, Math.round(yOffset / 40) * 40);
+                            
+                            // Ép buộc không được vượt quá giới hạn đáy
+                            newTop = Math.min(newTop, maxTop); 
+                            
+                            // DI CHUYỂN VÀ CẬP NHẬT TRỰC TIẾP LÊN MÀN HÌNH (LIVE PREVIEW)
+                            if (draggedItem.parentNode !== zone) {
+                                zone.appendChild(draggedItem);
+                            }
                             draggedItem.style.top = `${newTop}px`;
                             
-                            // Render lại chuỗi Text Giờ
-                            const h = parseInt(draggedItem.style.height);
-                            const startH = Math.floor(newTop/80), startM = (newTop%80)===40 ? 30 : 0;
-                            const endH = Math.floor((newTop+h)/80), endM = ((newTop+h)%80)===40 ? 30 : 0;
-                            const fTime = (hr, mi) => `${hr.toString().padStart(2,'0')}:${mi.toString().padStart(2,'0')}`;
+                            // CẬP NHẬT GIỜ THEO REAL-TIME VÀO BÊN TRONG THẺ
+                            const startH = Math.floor(newTop / 80);
+                            const startM = (newTop % 80) === 40 ? 30 : 0;
+                            const endH = Math.floor((newTop + itemHeight) / 80);
+                            const endM = ((newTop + itemHeight) % 80) === 40 ? 30 : 0;
                             
+                            const fTime = (hr, mi) => `${hr.toString().padStart(2,'0')}:${mi.toString().padStart(2,'0')}`;
                             draggedItem.querySelector('.ev-time').innerText = `${fTime(startH, startM)} - ${fTime(endH, endM)}`;
+                        }
+                    });
+                    
+                    zone.addEventListener('drop', e => {
+                        e.preventDefault();
+                        if(draggedItem) {
+                            draggedItem.classList.remove('dragging');
                         }
                     });
                 });
             }
         };
 
-        // Đóng dropdown khi click ra ngoài
         document.addEventListener('click', () => { document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')) });
 
     </script>
